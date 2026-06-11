@@ -1,1302 +1,400 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Analyst Academy | 4-Dars: Python Dictionary</title>
-    <style>
-        /* CSS VARIABLES & RESET */
-        :root {
-            --bg-color: #050b14;
-            --surface-color: rgba(13, 25, 48, 0.6);
-            --border-color: rgba(0, 238, 255, 0.15);
-            --primary: #00eeff;
-            --primary-glow: rgba(0, 238, 255, 0.6);
-            --secondary: #0077ff;
-            --accent: #ff0055;
-            --text-main: #e2e8f0;
-            --text-muted: #94a3b8;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --glass-bg: rgba(16, 24, 39, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            --font-code: 'Consolas', 'Courier New', monospace;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: var(--font-main);
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
-            overflow-x: hidden;
-            display: flex;
-        }
-
-        /* BACKGROUND EFFECTS */
-        .bg-particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(0, 238, 255, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 85% 30%, rgba(0, 119, 255, 0.05) 0%, transparent 50%);
-            pointer-events: none;
-        }
-
-        .grid-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: 50px 50px;
-            background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
-            z-index: -2;
-            pointer-events: none;
-        }
-
-        /* TYPOGRAPHY & UTILITIES */
-        h1, h2, h3, h4, h5 { font-weight: 600; line-height: 1.2; margin-bottom: 1rem; color: #fff; }
-        h1 { font-size: 2.5rem; letter-spacing: -0.02em; }
-        h2 { font-size: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 3rem;}
-        h3 { font-size: 1.5rem; margin-top: 2rem; color: var(--primary); }
-        p { margin-bottom: 1rem; color: var(--text-muted); }
-        a { color: var(--primary); text-decoration: none; transition: 0.3s; }
-        a:hover { color: #fff; text-shadow: 0 0 10px var(--primary-glow); }
-        
-        .neon-text {
-            color: var(--primary);
-            text-shadow: 0 0 10px var(--primary-glow), 0 0 20px var(--primary-glow);
-        }
-
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .glass-panel:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(0, 238, 255, 0.1);
-            border-color: rgba(0, 238, 255, 0.3);
-        }
-
-        /* LAYOUT */
-        .sidebar {
-            width: 280px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background: rgba(8, 15, 30, 0.9);
-            backdrop-filter: blur(15px);
-            border-right: 1px solid var(--border-color);
-            padding: 2rem 1rem;
-            overflow-y: auto;
-            z-index: 100;
-        }
-
-        .sidebar-logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1rem;
-        }
-
-        .nav-menu { list-style: none; }
-        .nav-item { margin-bottom: 0.5rem; }
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            border-left: 3px solid transparent;
-        }
-        .nav-link:hover, .nav-link.active {
-            background: rgba(0, 238, 255, 0.1);
-            color: var(--primary);
-            border-left-color: var(--primary);
-            box-shadow: inset 0 0 20px rgba(0, 238, 255, 0.05);
-        }
-
-        .main-content {
-            margin-left: 280px;
-            flex: 1;
-            padding: 2rem 4rem;
-            max-width: calc(100vw - 280px);
-        }
-
-        /* HEADER SECTION */
-        .hero-section {
-            text-align: center;
-            padding: 4rem 2rem;
-            margin-bottom: 3rem;
-            position: relative;
-            overflow: hidden;
-            border-radius: 20px;
-            background: linear-gradient(135deg, rgba(0, 119, 255, 0.1), rgba(0, 238, 255, 0.05));
-            border: 1px solid var(--border-color);
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0, 238, 255, 0.1) 0%, transparent 60%);
-            animation: pulse 8s infinite alternate;
-        }
-
-        .typing-container {
-            display: inline-block;
-            overflow: hidden;
-            white-space: nowrap;
-            border-right: 3px solid var(--primary);
-            animation: typing 3s steps(40, end), blink 0.75s step-end infinite;
-        }
-
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 3rem;
-        }
-
-        .stat-card {
-            text-align: center;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .stat-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 0.5rem;
-        }
-
-        /* CODE BLOCKS */
-        .code-block-wrapper {
-            position: relative;
-            margin: 1.5rem 0;
-            border-radius: 12px;
-            overflow: hidden;
-            background: #0d1117;
-            border: 1px solid var(--glass-border);
-        }
-
-        .code-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            background: #161b22;
-            border-bottom: 1px solid #30363d;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .copy-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: var(--text-muted);
-            padding: 0.3rem 0.8rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .copy-btn:hover {
-            background: var(--primary);
-            color: #000;
-        }
-
-        pre {
-            padding: 1rem;
-            overflow-x: auto;
-            font-family: var(--font-code);
-            font-size: 0.95rem;
-            color: #c9d1d9;
-            line-height: 1.5;
-        }
-
-        /* Syntax Highlighting */
-        .kw { color: #ff7b72; } /* Keyword */
-        .st { color: #a5d6ff; } /* String */
-        .nu { color: #79c0ff; } /* Number */
-        .fn { color: #d2a8ff; } /* Function */
-        .cm { color: #8b949e; font-style: italic; } /* Comment */
-        .op { color: #c9d1d9; } /* Operator */
-
-        /* ALERTS / CALLOUTS */
-        .alert {
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            margin: 1.5rem 0;
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            border-left: 4px solid;
-            background: rgba(255, 255, 255, 0.03);
-        }
-        
-        .alert-icon { font-size: 1.5rem; }
-        .alert.info { border-color: var(--secondary); }
-        .alert.info .alert-icon { color: var(--secondary); }
-        .alert.warning { border-color: var(--warning); }
-        .alert.warning .alert-icon { color: var(--warning); }
-        .alert.danger { border-color: var(--danger); }
-        .alert.danger .alert-icon { color: var(--danger); }
-        .alert.success { border-color: var(--success); }
-        .alert.success .alert-icon { color: var(--success); }
-
-        /* DATA ANALYST DASHBOARD WIDGETS */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .chart-mockup {
-            height: 150px;
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            padding: 10px 0;
-            border-bottom: 2px solid var(--border-color);
-            border-left: 2px solid var(--border-color);
-            margin-top: 1rem;
-        }
-
-        .bar {
-            flex: 1;
-            background: linear-gradient(to top, var(--secondary), var(--primary));
-            border-radius: 4px 4px 0 0;
-            position: relative;
-            transition: height 1s ease-out;
-            min-height: 10px;
-        }
-        .bar:hover { filter: brightness(1.2); }
-        .bar::after {
-            content: attr(data-val);
-            position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8rem;
-            color: #fff;
-        }
-
-        /* TABS */
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 1rem;
-        }
-        .tab-btn {
-            padding: 0.75rem 1.5rem;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            border-bottom: 2px solid transparent;
-            transition: 0.3s;
-        }
-        .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.5s; }
-
-        /* ACCORDION */
-        .accordion { margin: 1.5rem 0; }
-        .accordion-item {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-            background: rgba(13, 25, 48, 0.4);
-            overflow: hidden;
-        }
-        .accordion-header {
-            padding: 1rem 1.5rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            color: #fff;
-            transition: background 0.3s;
-        }
-        .accordion-header:hover { background: rgba(0, 238, 255, 0.05); }
-        .accordion-content {
-            padding: 0 1.5rem;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s ease;
-        }
-        .accordion-item.active .accordion-content {
-            padding: 1rem 1.5rem;
-            max-height: 500px;
-        }
-        .accordion-item.active .accordion-header .icon { transform: rotate(180deg); }
-
-        /* HOMEWORK CARDS */
-        .hw-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        .hw-card {
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        .hw-badge {
-            position: absolute;
-            top: 10px; right: 10px;
-            font-size: 0.75rem;
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-        .badge-easy { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-        .badge-medium { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
-        .badge-hard { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-        .hw-hint {
-            margin-top: auto;
-            padding-top: 1rem;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-        .hw-hint-text { display: none; color: var(--primary); margin-top: 0.5rem; font-family: var(--font-code); }
-
-        /* QUIZ SYSTEM */
-        .quiz-container { margin-top: 2rem; }
-        .quiz-progress {
-            height: 6px;
-            background: #1e293b;
-            border-radius: 3px;
-            margin-bottom: 2rem;
-            overflow: hidden;
-        }
-        .quiz-bar {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            transition: width 0.3s;
-        }
-        .question-card { display: none; animation: slideIn 0.4s; }
-        .question-card.active { display: block; }
-        .option-btn {
-            display: block;
-            width: 100%;
-            text-align: left;
-            padding: 1rem;
-            margin-bottom: 0.8rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: #fff;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 1rem;
-        }
-        .option-btn:hover { background: rgba(0, 238, 255, 0.1); border-color: var(--primary); }
-        .option-btn.correct { background: rgba(16, 185, 129, 0.2); border-color: var(--success); }
-        .option-btn.wrong { background: rgba(239, 68, 68, 0.2); border-color: var(--danger); }
-        .quiz-controls { display: flex; justify-content: space-between; margin-top: 1.5rem; }
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            font-family: inherit;
-        }
-        .btn-primary { background: var(--primary); color: #000; box-shadow: 0 0 15px rgba(0, 238, 255, 0.4); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(0, 238, 255, 0.6); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-
-        /* SCROLL PROGRESS & TOAST */
-        .scroll-progress {
-            position: fixed;
-            top: 0; left: 0; width: 0%; height: 3px;
-            background: var(--primary);
-            z-index: 9999;
-            box-shadow: 0 0 10px var(--primary);
-        }
-        .toast {
-            position: fixed; bottom: 20px; right: 20px;
-            background: rgba(16, 185, 129, 0.9);
-            color: #fff; padding: 1rem 2rem;
-            border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transform: translateY(100px); opacity: 0; transition: 0.3s; z-index: 1000;
-        }
-        .toast.show { transform: translateY(0); opacity: 1; }
-
-        /* FOOTER */
-        footer {
-            margin-top: 5rem;
-            padding: 3rem 0;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            background: rgba(0,0,0,0.5);
-        }
-
-        /* ANIMATIONS */
-        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
-        @keyframes typing { from { width: 0 } to { width: 100% } }
-        @keyframes blink { 50% { border-color: transparent } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-        /* RESPONSIVE */
-        @media (max-width: 1024px) {
-            .sidebar { transform: translateX(-100%); transition: 0.3s; }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; padding: 2rem; max-width: 100%; }
-            .mobile-menu-btn { display: block; position: fixed; bottom: 20px; right: 20px; z-index: 101; width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color:#000; border:none; font-size:1.5rem; box-shadow: 0 0 15px var(--primary-glow); cursor: pointer;}
-        }
-        @media (min-width: 1025px) { .mobile-menu-btn { display: none; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4-dars: Sikllar (for, while) | Saddam Teacher</title>
+<style>
+  :root {
+    --bg: #0b0f17;
+    --card: #131927;
+    --card2: #1a2233;
+    --ink: #e7ecf5;
+    --muted: #8b96ab;
+    --accent: #818cf8;
+    --accent-strong: #6366f1;
+    --accent-soft: rgba(99,102,241,.14);
+    --border: #232c40;
+    --code-bg: #0d1117;
+    --code-ink: #e6edf3;
+    --ok: #4ade80;
+    --bad: #f87171;
+    --radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, "Inter", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6;
+  }
+  ::selection { background: var(--accent-strong); color: #fff; }
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(11,15,23,.8); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-in { max-width: 880px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; gap: 12px; }
+  .logo {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 15px; flex-shrink: 0;
+    box-shadow: 0 0 18px rgba(99,102,241,.45);
+  }
+  .brand b { font-size: 15px; display: block; line-height: 1.2; }
+  .brand span { font-size: 12px; color: var(--muted); }
+  .header-in .spacer { flex: 1; }
+  .tg-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #229ED9; color: #fff; text-decoration: none;
+    padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; transition: .2s;
+  }
+  .tg-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(34,158,217,.5); }
+  .hero { max-width: 880px; margin: 0 auto; padding: 48px 20px 28px; position: relative; }
+  .hero::before {
+    content: ""; position: absolute; top: -80px; left: 10%; width: 420px; height: 280px;
+    background: radial-gradient(ellipse, rgba(99,102,241,.18), transparent 70%);
+    pointer-events: none;
+  }
+  .hero .tag {
+    display: inline-block; background: var(--accent-soft); color: var(--accent);
+    font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 999px;
+    letter-spacing: .5px; text-transform: uppercase; border: 1px solid rgba(129,140,248,.25);
+  }
+  .hero h1 { font-size: clamp(26px, 4.5vw, 38px); margin: 12px 0 8px; letter-spacing: -.5px; }
+  .hero p { color: var(--muted); max-width: 620px; }
+  .hero .chips { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-size: 12.5px; background: var(--card); border: 1px solid var(--border); padding: 5px 12px; border-radius: 999px; color: var(--muted); }
+  .pills { max-width: 880px; margin: 0 auto; padding: 0 20px 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill {
+    text-decoration: none; font-size: 13.5px; font-weight: 600; color: var(--ink);
+    background: var(--card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 999px; transition: .15s;
+  }
+  .pill:hover { border-color: var(--accent); color: var(--accent); }
+  main { max-width: 880px; margin: 0 auto; padding: 20px 20px 80px; }
+  section { margin-top: 36px; }
+  .sec-title { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .sec-title .ico {
+    width: 34px; height: 34px; border-radius: 9px; background: var(--accent-soft);
+    display: flex; align-items: center; justify-content: center; font-size: 17px;
+    border: 1px solid rgba(129,140,248,.2);
+  }
+  .sec-title h2 { font-size: 21px; letter-spacing: -.3px; }
+  .sec-sub { color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+  .cell { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; overflow: hidden; }
+  .cell .note { padding: 16px 18px 6px; }
+  .cell .note h3 { font-size: 15.5px; margin-bottom: 4px; }
+  .cell .note h3 .num { color: var(--accent); font-weight: 800; margin-right: 4px; }
+  .cell .note p { font-size: 14px; color: var(--muted); }
+  .cell .note code, .qtext code, .sec-sub code, .hw-item code {
+    background: var(--accent-soft); color: var(--accent);
+    padding: 1px 6px; border-radius: 5px; font-size: 13px;
+    font-family: "Cascadia Code", Consolas, monospace;
+  }
+  .editor-wrap { margin: 10px 14px 14px; border-radius: 10px; overflow: hidden; background: var(--code-bg); border: 1px solid #1d2530; }
+  .editor-bar { display: flex; align-items: center; padding: 7px 12px; gap: 6px; border-bottom: 1px solid #21262d; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot:nth-child(1) { background: #ff5f57; } .dot:nth-child(2) { background: #febc2e; } .dot:nth-child(3) { background: #28c840; }
+  .editor-bar .lang { margin-left: auto; font-size: 11px; color: #8b949e; font-family: monospace; }
+  textarea.code {
+    width: 100%; background: var(--code-bg); color: var(--code-ink);
+    border: none; outline: none; resize: none;
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: 13.5px; line-height: 1.55; padding: 14px 16px; display: block; tab-size: 4;
+  }
+  .cell-actions { display: flex; align-items: center; gap: 10px; padding: 0 12px 12px; background: var(--code-bg); flex-wrap: wrap; }
+  .run-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--accent-strong); color: #fff; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 700; padding: 8px 18px; border-radius: 8px; transition: .15s; font-family: inherit;
+  }
+  .run-btn:hover { background: #4f46e5; box-shadow: 0 0 14px rgba(99,102,241,.4); }
+  .run-btn:disabled { opacity: .5; cursor: wait; }
+  .reset-btn { background: transparent; color: #8b949e; border: 1px solid #30363d; font-size: 12.5px; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-family: inherit; }
+  .reset-btn:hover { color: #e6edf3; }
+  .output {
+    background: #010409; color: #7ee787; font-family: Consolas, monospace;
+    font-size: 13px; padding: 12px 16px; white-space: pre-wrap;
+    border-top: 1px solid #21262d; display: none; max-height: 260px; overflow: auto;
+  }
+  .output.err { color: #ff7b72; }
+  .hw-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 0; counter-reset: hw; }
+  .hw-item { display: flex; gap: 14px; padding: 13px 20px; border-bottom: 1px solid #1b2335; font-size: 14.5px; }
+  .hw-item:last-child { border-bottom: none; }
+  .hw-item::before {
+    counter-increment: hw; content: counter(hw);
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 8px;
+    background: var(--accent-soft); color: var(--accent);
+    font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-top: 2px;
+  }
+  .hw-item.project { background: linear-gradient(90deg, rgba(245,158,11,.12), transparent); }
+  .hw-item.project::before { background: #f59e0b; color: #0b0f17; content: "★"; }
+  .q-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px; }
+  .qtext { font-weight: 600; font-size: 15px; margin-bottom: 12px; }
+  .qtext .qnum { color: var(--accent); margin-right: 6px; }
+  .opts { display: grid; gap: 8px; }
+  .opt {
+    display: flex; align-items: center; gap: 10px; cursor: pointer;
+    border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 14px;
+    font-size: 14px; transition: .15s; background: var(--card2);
+  }
+  .opt:hover { border-color: var(--accent); }
+  .opt input { accent-color: var(--accent-strong); }
+  .opt.correct { border-color: var(--ok); background: rgba(74,222,128,.1); }
+  .opt.wrong { border-color: var(--bad); background: rgba(248,113,113,.1); }
+  .check-btn {
+    width: 100%; background: var(--accent-strong); color: #fff; border: none;
+    font-size: 15px; font-weight: 800; padding: 14px; border-radius: 12px;
+    cursor: pointer; font-family: inherit; transition: .15s;
+  }
+  .check-btn:hover { background: #4f46e5; box-shadow: 0 0 20px rgba(99,102,241,.35); }
+  .score { display: none; text-align: center; font-size: 17px; font-weight: 800; padding: 18px; border-radius: 12px; margin-top: 14px; border: 1px solid var(--border); }
+  .dl-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .dl-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--card); border: 1.5px solid var(--border); color: var(--ink);
+    text-decoration: none; font-size: 13.5px; font-weight: 600;
+    padding: 10px 18px; border-radius: 10px; cursor: pointer; transition: .15s; font-family: inherit;
+  }
+  .dl-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .lesson-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 44px; }
+  .lesson-nav a {
+    text-decoration: none; color: var(--ink); background: var(--card);
+    border: 1px solid var(--border); padding: 12px 20px; border-radius: 12px;
+    font-size: 14px; font-weight: 600; transition: .15s;
+  }
+  .lesson-nav a:hover { border-color: var(--accent); color: var(--accent); }
+  footer { border-top: 1px solid var(--border); background: var(--card); padding: 28px 20px; text-align: center; color: var(--muted); font-size: 13.5px; }
+  footer a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .loader-hint { font-size: 12px; color: #8b949e; }
+  @media (max-width: 560px) { .hero h1 { font-size: 24px; } }
+</style>
 </head>
 <body>
 
-    <div class="bg-particles"></div>
-    <div class="grid-bg"></div>
-    <div class="scroll-progress" id="scrollProgress"></div>
-    <div class="toast" id="toastMessage">Nusxa olindi!</div>
-    
-    <button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+<header>
+  <div class="header-in">
+    <div class="logo">ST</div>
+    <div class="brand"><b>Saddam Teacher</b><span>Data Analyst kursi</span></div>
+    <div class="spacer"></div>
+    <a class="tg-btn" href="https://t.me/saddamtg" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+      Yordam kerakmi?
+    </a>
+  </div>
+</header>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-logo neon-text">
-            Data Analyst<br>Academy
-        </div>
-        <ul class="nav-menu">
-            <li class="nav-item"><a href="#intro" class="nav-link active">1. Kirish</a></li>
-            <li class="nav-item"><a href="#what-is-dict" class="nav-link">2. Dict nima?</a></li>
-            <li class="nav-item"><a href="#create-dict" class="nav-link">3. Dict yaratish</a></li>
-            <li class="nav-item"><a href="#methods-basic" class="nav-link">4. .get(), keys(), values(), items()</a></li>
-            <li class="nav-item"><a href="#modify-dict" class="nav-link">5. Update & Delete</a></li>
-            <li class="nav-item"><a href="#nested-dict" class="nav-link">6. Nested Dict</a></li>
-            <li class="nav-item"><a href="#da-logic" class="nav-link">7. Data Analyst Logic</a></li>
-            <li class="nav-item"><a href="#mini-project" class="nav-link">8. Mini Project</a></li>
-            <li class="nav-item"><a href="#homework" class="nav-link">9. Uyga Vazifa (30)</a></li>
-            <li class="nav-item"><a href="#quiz" class="nav-link">10. Testlar (50)</a></li>
-            <li class="nav-item"><a href="#tips" class="nav-link">11. Extra & Tips</a></li>
-        </ul>
-    </aside>
+<div class="hero">
+  <span class="tag">1-oy · Python asoslari</span>
+  <h1>4-dars: Sikllar (for, while)</h1>
+  <p>Takrorlash kuchi: yig&#x27;indi, sanash, eng kattasini topish, break/continue va &quot;Sonni top&quot; o&#x27;yini!</p>
+  <div class="chips">
+    <span class="chip">⏱ 3 soat</span>
+    <span class="chip">💻 14 ta misol</span>
+    <span class="chip">📝 15 ta uy ishi</span>
+    <span class="chip">✅ 10 savollik test</span>
+  </div>
+</div>
 
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-        
-        <!-- HERO SECTION -->
-        <section id="intro" class="hero-section">
-            <h1 class="neon-text">PYTHON DICTIONARY (dict)</h1>
-            <div style="height: 40px; margin: 1rem 0;">
-                <h3 class="typing-container">Ma'lumotlarni professional boshqarish va analiz qilish</h3>
-            </div>
-            <p>Boshlang'ichdan o'rta darajagacha to'liq qamrovli qo'llanma.</p>
-            
-            <div class="stat-grid">
-                <div class="glass-panel stat-card">
-                    <div class="stat-icon">📚</div>
-                    <div class="stat-value counter" data-target="15">0</div>
-                    <div class="stat-label">Dict Methods</div>
-                </div>
-                <div class="glass-panel stat-card">
-                    <div class="stat-icon">💼</div>
-                    <div class="stat-value counter" data-target="7">0</div>
-                    <div class="stat-label">Real Projects</div>
-                </div>
-                <div class="glass-panel stat-card">
-                    <div class="stat-icon">📊</div>
-                    <div class="stat-value counter" data-target="12">0</div>
-                    <div class="stat-label">Data Logic</div>
-                </div>
-                <div class="glass-panel stat-card">
-                    <div class="stat-icon">🎯</div>
-                    <div class="stat-value counter" data-target="80">0</div>
-                    <div class="stat-label">Practice Tasks</div>
-                </div>
-            </div>
-        </section>
+<div class="pills">
+  <a class="pill" href="#dars">📖 Dars</a>
+  <a class="pill" href="#uyishi">🏠 Uy ishi</a>
+  <a class="pill" href="#test">🧪 Test</a>
+</div>
 
-        <!-- DICT NIMA -->
-        <section id="what-is-dict" style="padding-top: 80px; margin-top: -80px;">
-            <h2>Dictionary (Lug'at) Nima?</h2>
-            <div class="glass-panel">
-                <p>Python'da <strong>dictionary</strong> (qisqacha <code>dict</code>) — bu ma'lumotlarni <code>Key: Value</code> (Kalit: Qiymat) ko'rinishida saqlaydigan ma'lumotlar tuzilmasi. U xuddi real hayotdagi lug'atga o'xshaydi: so'z (kalit) va uning ma'nosi (qiymat).</p>
-                
-                <div class="alert info">
-                    <span class="alert-icon">💡</span>
-                    <div>
-                        <strong>Data Analyst nuqtai nazaridan:</strong> <br>
-                        Dict bu JSON formatining asosi bo'lib, API lar bilan ishlashda, NoSQL bazalarda (MongoDB) va ma'lumotlarni turli xil o'lchovlar (dimensions) bo'yicha guruhlashda eng muhim vosita hisoblanadi.
-                    </div>
-                </div>
-            </div>
-        </section>
+<main>
 
-        <!-- DICT YARATISH -->
-        <section id="create-dict" style="padding-top: 80px; margin-top: -80px;">
-            <h2>Dict Yaratish</h2>
-            <div class="glass-panel">
-                <p>Dictionary jingalak qavslar <code>{}</code> yoki <code>dict()</code> funksiyasi yordamida yaratiladi.</p>
-                
-                <div class="code-block-wrapper">
-                    <div class="code-header">
-                        <span>python</span>
-                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                    </div>
-                    <pre><code><span class="cm"># Bo'sh dict yaratish</span>
-student <span class="op">=</span> {}
-student2 <span class="op">=</span> <span class="fn">dict</span>()
+<section id="dars">
+  <div class="sec-title"><div class="ico">📖</div><h2>Dars: misollar bilan</h2></div>
+  <p class="sec-sub">«Ishga tushirish» bosing — kod brauzerning o'zida ishlaydi (birinchi marta 5-10 soniya yuklanadi). Kodni o'zgartirib tajriba qiling! <code>input()</code> so'ralsa, oynacha chiqadi.</p>
+  
+  <div id="cells"></div>
+</section>
 
-<span class="cm"># Ma'lumot bilan yaratish</span>
-user <span class="op">=</span> {
-    <span class="st">"id"</span>: <span class="nu">101</span>,
-    <span class="st">"name"</span>: <span class="st">"Saddam"</span>,
-    <span class="st">"role"</span>: <span class="st">"Data Analyst"</span>,
-    <span class="st">"is_active"</span>: <span class="kw">True</span>
+<section id="uyishi">
+  <div class="sec-title"><div class="ico">🏠</div><h2>Uy ishi — 15 ta topshiriq</h2></div>
+  <p class="sec-sub">Har birini alohida bajarib, keyingi darsga olib keling. ★ — mini-loyiha!</p>
+  <div class="hw-card" id="hw"></div>
+  <div class="dl-row">
+    <button class="dl-btn" onclick="downloadHW()">⬇ Uy ishini yuklab olish (.txt)</button>
+  </div>
+</section>
+
+<section id="test">
+  <div class="sec-title"><div class="ico">🧪</div><h2>Mini-test — o'zingizni sinang</h2></div>
+  <p class="sec-sub">10 ta savol. Belgilab bo'lgach, «Tekshirish» tugmasini bosing.</p>
+  <div id="quiz"></div>
+  <button class="check-btn" onclick="grade()">Tekshirish ✓</button>
+  <div class="score" id="score"></div>
+</section>
+
+<div class="lesson-nav" id="lesson-nav"></div>
+
+</main>
+
+<footer>
+  © 2026 <b>Saddam Teacher</b> · Data Analyst kursi · Savollar bo'lsa: <a href="https://t.me/saddamtg" target="_blank">t.me/saddamtg</a>
+</footer>
+
+<script>
+const DATA = {"cells": [{"t": "for — takrorlash. range(5) = 0,1,2,3,4", "n": "DIQQAT: 5 ning o&#x27;zi KIRMAYDI!", "c": "for i in range(5):\n    print(i)"}, {"t": "range(qayerdan, qayergacha)", "n": "", "c": "for i in range(1, 6):\n    print(i)    # 1,2,3,4,5"}, {"t": "SINF ISHI: karra jadvali", "n": "", "c": "son = int(input(\"Son kiriting: \"))\nfor i in range(1, 11):\n    print(f\"{son} x {i} = {son * i}\")"}, {"t": "Yig'indi hisoblash — eng muhim usul!", "n": "Sikldan OLDIN <code>jami = 0<\/code> deymiz, ichida qo&#x27;shib boramiz.", "c": "jami = 0\nfor son in range(1, 101):\n    jami = jami + son\nprint(jami)   # 5050"}, {"t": "Ro'yxat (list) ustida sikl", "n": "List — bir nechta qiymat birga. Keyingi darsda chuqur o&#x27;rganamiz, hozircha sodda ishlatamiz.", "c": "tushumlar = [380000, 420000, 390000, 450000, 510000]\njami = 0\nfor t in tushumlar:\n    jami = jami + t\nprint(f\"Haftalik tushum: {jami}\")"}, {"t": "Sanash — sikl + if birga", "n": "Katta tushumli kunlar nechta?", "c": "tushumlar = [380000, 420000, 390000, 450000, 510000]\nsanagich = 0\nfor t in tushumlar:\n    if t > 400000:\n        sanagich = sanagich + 1\nprint(f\"400 mingdan oshgan kunlar: {sanagich} ta\")"}, {"t": "Eng kattasini topish", "n": "Birinchisini &quot;eng katta&quot; deymiz, undan kattasi chiqsa — almashtiramiz.", "c": "tushumlar = [380000, 420000, 390000, 450000, 510000]\neng_katta = tushumlar[0]\nfor t in tushumlar:\n    if t > eng_katta:\n        eng_katta = t\nprint(f\"Eng zo'r kun: {eng_katta}\")"}, {"t": "while — shart to'g'ri ekan, aylanadi", "n": "DIQQAT: <code>k = k + 1<\/code> ni unutsangiz — sikl hech qachon to&#x27;xtamaydi!", "c": "k = 1\nwhile k <= 5:\n    print(f\"{k}-mijozga xizmat ko'rsatildi\")\n    k = k + 1"}, {"t": "REAL MISOL: omonat qachon 2 baravar bo'ladi?", "n": "Necha yil kerakligini bilmaymiz — shuning uchun while!", "c": "pul = 5000000\nyil = 0\nwhile pul < 10000000:\n    pul = pul * 1.18    # yiliga 18% o'sadi\n    yil = yil + 1\nprint(f\"{yil} yilda pul 2 baravar bo'ladi\")"}, {"t": "break — siklni to'xtatish", "n": "", "c": "for i in range(1, 100):\n    print(i)\n    if i == 5:\n        break    # 5 ga yetganda to'xta!"}, {"t": "continue — bu safarini tashlab ket", "n": "Juft sonlarni tashlab, faqat toqlarni chiqaramiz.", "c": "for i in range(1, 8):\n    if i % 2 == 0:\n        continue   # juftni tashla\n    print(i)       # 1, 3, 5, 7"}, {"t": "SINF ISHI: yulduzcha zinapoya", "n": "", "c": "for qator in range(1, 6):\n    print(\"*\" * qator)"}, {"t": "REAL MISOL: oylik hisobot", "n": "Ikkita listni birga o&#x27;qiymiz — zip() yordamida.", "c": "oylar = [\"Yanvar\", \"Fevral\", \"Mart\"]\ntushumlar = [1250, 1410, 1690]\nfor oy, t in zip(oylar, tushumlar):\n    print(f\"{oy}: {t} mln so'm\")"}, {"t": "SINF ISHI: \"Sonni top\" o'yini", "n": "Kompyuter son o&#x27;ylaydi — siz topasiz!", "c": "import random\nyashirin = random.randint(1, 100)\nwhile True:\n    taxmin = int(input(\"Taxmin qiling (1-100): \"))\n    if taxmin == yashirin:\n        print(\"TOPDINGIZ!\")\n        break\n    elif taxmin < yashirin:\n        print(\"Kattaroq ayting\")\n    else:\n        print(\"Kichikroq ayting\")"}], "hw": ["1 dan 10 gacha sonlarni for bilan chiqaring.", "1 dan 20 gacha faqat JUFT sonlarni chiqaring (maslahat: range(2, 21, 2)).", "input bilan son so'rab, karra jadvalini chiqaring: 7 x 1 = 7 ... 7 x 10 = 70", "1 dan 100 gacha sonlar yig'indisini sikl bilan toping. (Javob: 5050)", "tushumlar = [380000, 420000, 390000, 450000, 510000] Sikl bilan jami tushumni toping.", "Shu listdan 400000 dan katta kunlar NECHTALIGINI sanang.", "Shu listdan ENG KATTASINI sikl bilan toping (max siz!).", "while bilan 1 dan 5 gacha chiqaring (\"k = k + 1\" ni unutmang!).", "while bilan: 3000000 so'm omonat yiliga 20% o'sadi. Necha yilda 6000000 dan oshadi?", "for + break: 1 dan 50 gacha chiqaring, lekin 10 ga yetganda to'xtang.", "for + continue: 1 dan 10 gacha, lekin 5 ni tashlab o'ting (5 chiqmasin).", "Yulduzcha zinapoya chiqaring (5 qator): * ** *** **** *****", "zip bilan: oylar = [\"Yan\", \"Fev\", \"Mar\"], savdo = [1250, 1410, 1690] - har oyni \"Yan: 1250 mln\" ko'rinishida chiqaring.", "Mahsulotlar listini for bilan raqamlab chiqaring: 1. Non 2. Sut  ... (maslahat: sanagich ishlating)", "MINI-LOYIHA: \"Sonni top\" o'yini. random.randint(1, 50) bilan son o'ylasin. while True bilan foydalanuvchi topguncha \"kattaroq/kichikroq\" deb yo'naltiring. Topganda \"TOPDINGIZ!\" deb break qiling."], "quiz": [{"q": "range(5) qanday sonlar beradi?", "o": ["1,2,3,4,5", "0,1,2,3,4", "0,1,2,3,4,5", "5 ta tasodifiy"], "a": 1}, {"q": "range(1, 10, 3) qanday sonlar beradi?", "o": ["1,4,7", "1,3,9", "3,6,9", "1,4,7,10"], "a": 0}, {"q": "for va while ning farqi?", "o": ["farqi yo'q", "for - soni ma'lum, while - shartga bog'liq takrorlash", "while tezroq", "for faqat songa ishlaydi"], "a": 1}, {"q": "break nima qiladi?", "o": ["dasturni o'chiradi", "siklni butunlay to'xtatadi", "bitta aylanishni tashlab o'tadi", "siklni qayta boshlaydi"], "a": 1}, {"q": "continue nima qiladi?", "o": ["siklni to'xtatadi", "joriy aylanishni tashlab keyingisiga o'tadi", "dasturni davom ettiradi", "shartni o'zgartiradi"], "a": 1}, {"q": "jami = 0; for x in [1,2,3]: jami += x - jami nechchi bo'ladi?", "o": ["0", "3", "6", "123"], "a": 2}, {"q": "Cheksiz sikl qachon yuzaga keladi?", "o": ["for ko'p aylansa", "while sharti hech qachon False bo'lmasa", "break ishlatsak", "range katta bo'lsa"], "a": 1}, {"q": "while k <= 5: ichida nimani unutsak sikl cheksiz bo'ladi?", "o": ["print ni", "k += 1 ni", "if ni", "else ni"], "a": 1}, {"q": "zip(oylar, savdo) nima qiladi?", "o": ["fayllarni siqadi", "ikkita listni juftlab beradi", "listni saralaydi", "listni teskari qiladi"], "a": 1}, {"q": "Maksimumni sikl bilan topishda birinchi qadam?", "o": ["jami = 0 deyish", "birinchi elementni \"eng katta\" deb olish", "listni saralash", "max() chaqirish ============================================================"], "a": 1}], "lesson_no": "4", "title": "4-dars: Sikllar (for, while)"};
+const CELLS = DATA.cells, HW = DATA.hw, QUIZ = DATA.quiz;
+
+/* ===== render cells ===== */
+const cellsEl = document.getElementById("cells");
+CELLS.forEach((cell, i) => {
+  const div = document.createElement("div");
+  div.className = "cell";
+  div.innerHTML = `
+    <div class="note">
+      <h3><span class="num">${i+1}.</span> ${cell.t}</h3>
+      <p>${cell.n}</p>
+    </div>
+    <div class="editor-wrap">
+      <div class="editor-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="lang">python</span></div>
+      <textarea class="code" id="code-${i}" spellcheck="false"></textarea>
+      <div class="cell-actions">
+        <button class="run-btn" onclick="runCell(${i})" id="btn-${i}">▶ Ishga tushirish</button>
+        <button class="reset-btn" onclick="resetCell(${i})">↺ Qaytarish</button>
+        <span class="loader-hint" id="hint-${i}"></span>
+      </div>
+      <pre class="output" id="out-${i}"></pre>
+    </div>`;
+  cellsEl.appendChild(div);
+  div.querySelector(`#code-${i}`).value = cell.c;
+});
+document.querySelectorAll("textarea.code").forEach(t => {
+  const fit = () => { t.style.height = "auto"; t.style.height = (t.scrollHeight + 2) + "px"; };
+  t.addEventListener("input", fit); fit();
+});
+
+/* ===== render hw ===== */
+const hwEl = document.getElementById("hw");
+HW.forEach((item, i) => {
+  const d = document.createElement("div");
+  d.className = "hw-item" + (i === HW.length - 1 ? " project" : "");
+  const safe = item.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+  d.innerHTML = `<div>${safe}</div>`;
+  hwEl.appendChild(d);
+});
+
+/* ===== render quiz ===== */
+const quizEl = document.getElementById("quiz");
+QUIZ.forEach((q, qi) => {
+  const card = document.createElement("div");
+  card.className = "q-card";
+  const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+  card.innerHTML = `<div class="qtext"><span class="qnum">${qi+1}.</span> ${esc(q.q)}</div>
+    <div class="opts">${q.o.map((opt, oi) => `
+      <label class="opt" id="opt-${qi}-${oi}">
+        <input type="radio" name="q${qi}" value="${oi}">
+        <span><b>${"abcd"[oi]})</b> ${esc(opt)}</span>
+      </label>`).join("")}</div>`;
+  quizEl.appendChild(card);
+});
+
+/* ===== lesson nav ===== */
+const n = parseInt(DATA.lesson_no);
+const nav = document.getElementById("lesson-nav");
+let navHtml = "";
+if (n > 1) navHtml += `<a href="https://saddamteacher.github.io/${n-1}dars/">← ${n-1}-dars</a>`;
+else navHtml += `<span></span>`;
+if (n < 7) navHtml += `<a href="https://saddamteacher.github.io/${n+1}dars/">${n+1}-dars →</a>`;
+nav.innerHTML = navHtml;
+
+/* ===== pyodide ===== */
+let pyodide = null, pyLoading = null;
+async function getPy(hintEl) {
+  if (pyodide) return pyodide;
+  if (!pyLoading) {
+    hintEl.textContent = "Python yuklanmoqda... (5-10 soniya)";
+    pyLoading = (async () => {
+      const s = document.createElement("script");
+      s.src = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js";
+      document.head.appendChild(s);
+      await new Promise(r => s.onload = r);
+      const py = await loadPyodide();
+      py.globals.set("js_prompt", (msg) => {
+        const v = window.prompt(msg || "Qiymat kiriting:");
+        return v === null ? "" : v;
+      });
+      await py.runPythonAsync("import builtins\nbuiltins.input = lambda prompt='': js_prompt(str(prompt))");
+      return py;
+    })();
+  }
+  pyodide = await pyLoading;
+  hintEl.textContent = "";
+  return pyodide;
 }
-<span class="fn">print</span>(user)</code></pre>
-                </div>
-                
-                <div class="alert warning">
-                    <span class="alert-icon">⚠️</span>
-                    <div>
-                        <strong>Muhim eslatma:</strong> Dict ichidagi <code>Key</code> (kalit)lar doimo unikal (takrorlanmas) bo'lishi va o'zgarmas (immutable) ma'lumot turlari (string, integer, tuple) bo'lishi shart. List yoki dict ni key sifatida ishlata olmaysiz!
-                    </div>
-                </div>
-            </div>
-        </section>
+async function runCell(i) {
+  const btn = document.getElementById(`btn-${i}`);
+  const out = document.getElementById(`out-${i}`);
+  const hint = document.getElementById(`hint-${i}`);
+  btn.disabled = true;
+  try {
+    const py = await getPy(hint);
+    out.style.display = "block";
+    out.classList.remove("err");
+    out.textContent = "";
+    let buf = [];
+    py.setStdout({ batched: (s) => { buf.push(s); out.textContent = buf.join("\n"); } });
+    py.setStderr({ batched: (s) => { buf.push(s); out.textContent = buf.join("\n"); } });
+    const code = document.getElementById(`code-${i}`).value;
+    await py.runPythonAsync(code);
+    if (!buf.length) out.textContent = "(natija yo'q — print qo'shing)";
+  } catch (e) {
+    out.style.display = "block";
+    out.classList.add("err");
+    const msg = String(e.message || e);
+    const lines = msg.split("\n").filter(l => l.trim());
+    out.textContent = "XATO: " + (lines[lines.length - 1] || msg);
+  }
+  btn.disabled = false;
+}
+function resetCell(i) {
+  const t = document.getElementById(`code-${i}`);
+  t.value = CELLS[i].c;
+  t.dispatchEvent(new Event("input"));
+  document.getElementById(`out-${i}`).style.display = "none";
+}
 
-        <!-- BASIC METHODS -->
-        <section id="methods-basic" style="padding-top: 80px; margin-top: -80px;">
-            <h2>Asosiy Metodlar: .get(), keys(), values(), items()</h2>
-            
-            <div class="tabs">
-                <button class="tab-btn active" onclick="openTab(event, 'tab-get')">.get()</button>
-                <button class="tab-btn" onclick="openTab(event, 'tab-keys')">.keys() / .values()</button>
-                <button class="tab-btn" onclick="openTab(event, 'tab-items')">.items()</button>
-            </div>
-
-            <div class="glass-panel">
-                <div id="tab-get" class="tab-content active">
-                    <h3>Elementni olish: to'g'ridan-to'g'ri vs .get()</h3>
-                    <p>Dict dan qiymatni olishning 2 usuli bor. Agar kalit mavjud bo'lmasa, to'g'ridan-to'g'ri olish <code>KeyError</code> beradi, <code>.get()</code> esa xatolik bermaydi.</p>
-                    <div class="code-block-wrapper">
-                        <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-                        <pre><code>sales <span class="op">=</span> {<span class="st">"jan"</span>: <span class="nu">1500</span>, <span class="st">"feb"</span>: <span class="nu">2000</span>}
-
-<span class="cm"># Xavfli usul</span>
-<span class="fn">print</span>(sales[<span class="st">"jan"</span>]) <span class="cm"># 1500</span>
-<span class="cm"># print(sales["mar"]) # KeyError! Dastur qulaydi.</span>
-
-<span class="cm"># Xavfsiz usul (Professional)</span>
-<span class="fn">print</span>(sales.<span class="fn">get</span>(<span class="st">"mar"</span>)) <span class="cm"># None qaytaradi</span>
-<span class="fn">print</span>(sales.<span class="fn">get</span>(<span class="st">"mar"</span>, <span class="nu">0</span>)) <span class="cm"># Agar yo'q bo'lsa default 0 qaytaradi</span></code></pre>
-                    </div>
-                </div>
-
-                <div id="tab-keys" class="tab-content">
-                    <h3>.keys() va .values()</h3>
-                    <p>Barcha kalitlarni yoki barcha qiymatlarni ajratib olish uchun.</p>
-                    <div class="code-block-wrapper">
-                        <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-                        <pre><code>data <span class="op">=</span> {<span class="st">"apple"</span>: <span class="nu">50</span>, <span class="st">"banana"</span>: <span class="nu">30</span>, <span class="st">"orange"</span>: <span class="nu">20</span>}
-
-kalitlar <span class="op">=</span> data.<span class="fn">keys</span>()
-qiymatlar <span class="op">=</span> data.<span class="fn">values</span>()
-
-<span class="cm"># Data Analyst logikasi: Jami savdoni hisoblash</span>
-total_sales <span class="op">=</span> <span class="fn">sum</span>(data.<span class="fn">values</span>())
-<span class="fn">print</span>(<span class="st">f"Jami mevalar soni: {total_sales}"</span>) <span class="cm"># 100</span></code></pre>
-                    </div>
-                </div>
-
-                <div id="tab-items" class="tab-content">
-                    <h3>.items()</h3>
-                    <p>Kalit va qiymatni birgalikda Tuple ko'rinishida olish uchun. Asosan <code>for</code> tsiklida aylanib chiqish uchun ishlatiladi.</p>
-                    <div class="code-block-wrapper">
-                        <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-                        <pre><code>prices <span class="op">=</span> {<span class="st">"USD"</span>: <span class="nu">12500</span>, <span class="st">"EUR"</span>: <span class="nu">13600</span>}
-
-<span class="kw">for</span> currency, rate <span class="kw">in</span> prices.<span class="fn">items</span>():
-    <span class="fn">print</span>(<span class="st">f"Valyuta: {currency}, Kurs: {rate}"</span>)</code></pre>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- MODIFY DICT -->
-        <section id="modify-dict" style="padding-top: 80px; margin-top: -80px;">
-            <h2>Yangilash va O'chirish (Update & Delete)</h2>
-            <div class="glass-panel">
-                <div class="accordion">
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAccordion(this)">
-                            1. Yangi element qo'shish va qiymatni o'zgartirish <span class="icon">▼</span>
-                        </div>
-                        <div class="accordion-content">
-                            <p>To'g'ridan-to'g'ri kalit orqali yoki <code>.update()</code> metodi orqali.</p>
-                            <div class="code-block-wrapper">
-                                <pre><code>user <span class="op">=</span> {<span class="st">"name"</span>: <span class="st">"Ali"</span>}
-
-<span class="cm"># Yangi qo'shish</span>
-user[<span class="st">"age"</span>] <span class="op">=</span> <span class="nu">25</span>
-
-<span class="cm"># Mavjudni o'zgartirish</span>
-user[<span class="st">"name"</span>] <span class="op">=</span> <span class="st">"Vali"</span>
-
-<span class="cm"># update() bilan bir nechta o'zgartirish</span>
-user.<span class="fn">update</span>({<span class="st">"city"</span>: <span class="st">"Tashkent"</span>, <span class="st">"age"</span>: <span class="nu">26</span>})</code></pre>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAccordion(this)">
-                            2. Elementlarni o'chirish: del, pop, clear <span class="icon">▼</span>
-                        </div>
-                        <div class="accordion-content">
-                            <div class="code-block-wrapper">
-                                <pre><code>data <span class="op">=</span> {<span class="st">"a"</span>: <span class="nu">1</span>, <span class="st">"b"</span>: <span class="nu">2</span>, <span class="st">"c"</span>: <span class="nu">3</span>, <span class="st">"d"</span>: <span class="nu">4</span>}
-
-<span class="cm"># 1. del - aniq kalit bo'yicha xotiradan o'chiradi</span>
-<span class="kw">del</span> data[<span class="st">"a"</span>]
-
-<span class="cm"># 2. pop - o'chiradi va o'chirilgan qiymatni qaytaradi</span>
-val <span class="op">=</span> data.<span class="fn">pop</span>(<span class="st">"b"</span>) <span class="cm"># val = 2</span>
-
-<span class="cm"># 3. popitem - oxirgi qo'shilgan juftlikni o'chiradi (Tuple qaytaradi)</span>
-last_item <span class="op">=</span> data.<span class="fn">popitem</span>() <span class="cm"># ('d', 4)</span>
-
-<span class="cm"># 4. clear - dict ni butunlay tozalaydi (bo'm-bo'sh qiladi)</span>
-data.<span class="fn">clear</span>() <span class="cm"># data = {}</span></code></pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- NESTED DICT -->
-        <section id="nested-dict" style="padding-top: 80px; margin-top: -80px;">
-            <h2>Nested Dictionary (Ichma-ich lug'atlar)</h2>
-            <div class="glass-panel">
-                <p>Real loyihalarda ma'lumotlar ko'pincha murakkab tuzilishga ega bo'ladi. Dict ichida yana dict saqlash Data Analystlar uchun odatiy hol.</p>
-                <div class="code-block-wrapper">
-                    <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-                    <pre><code>company <span class="op">=</span> {
-    <span class="st">"IT"</span>: {
-        <span class="st">"manager"</span>: <span class="st">"John"</span>,
-        <span class="st">"employees"</span>: <span class="nu">15</span>
-    },
-    <span class="st">"HR"</span>: {
-        <span class="st">"manager"</span>: <span class="st">"Anna"</span>,
-        <span class="st">"employees"</span>: <span class="nu">5</span>
+/* ===== grade ===== */
+function grade() {
+  let score = 0;
+  QUIZ.forEach((q, qi) => {
+    const sel = document.querySelector(`input[name="q${qi}"]:checked`);
+    for (let oi = 0; oi < 4; oi++)
+      document.getElementById(`opt-${qi}-${oi}`).classList.remove("correct", "wrong");
+    if (sel) {
+      const v = +sel.value;
+      if (v === q.a) { score++; document.getElementById(`opt-${qi}-${v}`).classList.add("correct"); }
+      else {
+        document.getElementById(`opt-${qi}-${v}`).classList.add("wrong");
+        document.getElementById(`opt-${qi}-${q.a}`).classList.add("correct");
+      }
+    } else {
+      document.getElementById(`opt-${qi}-${q.a}`).classList.add("correct");
     }
+  });
+  const el = document.getElementById("score");
+  el.style.display = "block";
+  let emoji = score >= 9 ? "🏆" : score >= 7 ? "🎉" : score >= 5 ? "💪" : "📚";
+  let msg = score >= 9 ? "Ajoyib!" : score >= 7 ? "Yaxshi natija!" : score >= 5 ? "Yomon emas, yana takrorlang!" : "Darsni qayta ko'rib chiqing!";
+  el.style.background = score >= 7 ? "rgba(74,222,128,.1)" : score >= 5 ? "rgba(245,158,11,.12)" : "rgba(248,113,113,.1)";
+  el.style.color = score >= 7 ? "#4ade80" : score >= 5 ? "#fbbf24" : "#f87171";
+  el.textContent = `${emoji} ${score} / ${QUIZ.length} — ${msg}`;
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
-<span class="cm"># Ichki elementga murojaat</span>
-it_manager <span class="op">=</span> company[<span class="st">"IT"</span>][<span class="st">"manager"</span>]
-<span class="fn">print</span>(it_manager) <span class="cm"># John</span></code></pre>
-                </div>
-                <div class="alert danger">
-                    <span class="alert-icon">🔥</span>
-                    <div>
-                        <strong>Xatoliklardan qochish:</strong> Nested dict larda <code>company["IT"]["budget"]</code> deb murojaat qilsangiz va kalit yo'q bo'lsa xatolik beradi. Professional yo'l: <code>company.get("IT", {}).get("budget", 0)</code>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- DATA ANALYST LOGIC -->
-        <section id="da-logic" style="padding-top: 80px; margin-top: -80px;">
-            <h2>Data Analyst Logikalari</h2>
-            <p>Haqiqiy analiz stsenariylarida Dict qanday ishlatiladi?</p>
-
-            <div class="dashboard-grid">
-                <!-- Logic 1 -->
-                <div class="glass-panel">
-                    <h4 class="neon-text">1. O'quvchilar Bahosi Analizi</h4>
-                    <p class="text-sm">Max, Min va Average hisoblash.</p>
-                    <div class="code-block-wrapper">
-                        <pre style="font-size: 0.8rem"><code>grades <span class="op">=</span> {<span class="st">"Ali"</span>: <span class="nu">85</span>, <span class="st">"Vali"</span>: <span class="nu">92</span>, <span class="st">"Gani"</span>: <span class="nu">78</span>}
-
-max_g <span class="op">=</span> <span class="fn">max</span>(grades.<span class="fn">values</span>())
-min_g <span class="op">=</span> <span class="fn">min</span>(grades.<span class="fn">values</span>())
-avg_g <span class="op">=</span> <span class="fn">sum</span>(grades.<span class="fn">values</span>()) / <span class="fn">len</span>(grades)
-
-<span class="cm"># Top studentni topish logikasi</span>
-top_student <span class="op">=</span> [k <span class="kw">for</span> k, v <span class="kw">in</span> grades.<span class="fn">items</span>() <span class="kw">if</span> v <span class="op">==</span> max_g][<span class="nu">0</span>]</code></pre>
-                    </div>
-                    <div class="chart-mockup" id="chart1">
-                        <div class="bar" style="height: 0%" data-val="85"></div>
-                        <div class="bar" style="height: 0%" data-val="92"></div>
-                        <div class="bar" style="height: 0%" data-val="78"></div>
-                    </div>
-                </div>
-
-                <!-- Logic 2 -->
-                <div class="glass-panel">
-                    <h4 class="neon-text">2. KPI Monitoring (Categorization)</h4>
-                    <p class="text-sm">Ma'lumotlarni shart bo'yicha guruhlash.</p>
-                    <div class="code-block-wrapper">
-                        <pre style="font-size: 0.8rem"><code>sales <span class="op">=</span> {<span class="st">"Q1"</span>: <span class="nu">120</span>, <span class="st">"Q2"</span>: <span class="nu">80</span>, <span class="st">"Q3"</span>: <span class="nu">150</span>}
-status <span class="op">=</span> {<span class="st">"Good"</span>: [], <span class="st">"Bad"</span>: []}
-
-<span class="kw">for</span> q, amount <span class="kw">in</span> sales.<span class="fn">items</span>():
-    <span class="kw">if</span> amount >= <span class="nu">100</span>:
-        status[<span class="st">"Good"</span>].<span class="fn">append</span>(q)
-    <span class="kw">else</span>:
-        status[<span class="st">"Bad"</span>].<span class="fn">append</span>(q)
-<span class="cm"># Natija: {'Good': ['Q1', 'Q3'], 'Bad': ['Q2']}</span></code></pre>
-                    </div>
-                    <div style="margin-top: 1rem; display: flex; gap: 10px;">
-                        <span style="background: var(--success); padding: 5px 10px; border-radius: 4px; color: #000; font-weight: bold;">Good: Q1, Q3</span>
-                        <span style="background: var(--danger); padding: 5px 10px; border-radius: 4px; color: #fff; font-weight: bold;">Bad: Q2</span>
-                    </div>
-                </div>
-
-                <!-- Logic 3 -->
-                <div class="glass-panel">
-                    <h4 class="neon-text">3. Frequency (Chastota) Analizi</h4>
-                    <p class="text-sm">Ro'yxatdagi elementlar necha marta qatnashganini sanash.</p>
-                    <div class="code-block-wrapper">
-                        <pre style="font-size: 0.8rem"><code>words <span class="op">=</span> [<span class="st">"data"</span>, <span class="st">"ai"</span>, <span class="st">"data"</span>, <span class="st">"sql"</span>, <span class="st">"ai"</span>, <span class="st">"data"</span>]
-freq <span class="op">=</span> {}
-
-<span class="kw">for</span> w <span class="kw">in</span> words:
-    <span class="cm"># get() dagi ajoyib trick</span>
-    freq[w] <span class="op">=</span> freq.<span class="fn">get</span>(w, <span class="nu">0</span>) + <span class="nu">1</span>
-    
-<span class="cm"># Natija: {'data': 3, 'ai': 2, 'sql': 1}</span></code></pre>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- MINI PROJECT -->
-        <section id="mini-project" style="padding-top: 80px; margin-top: -80px;">
-            <h2>Mini Project: Student Analytics System</h2>
-            <div class="glass-panel" style="border-color: var(--primary);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap;">
-                    <h3>Real Vaqt Analitikasi</h3>
-                    <div>
-                        <input type="text" id="stuName" placeholder="Ism" style="padding: 5px; border-radius: 4px; border: none; outline: none; margin-right: 5px;">
-                        <input type="number" id="stuScore" placeholder="Baho" style="padding: 5px; border-radius: 4px; border: none; outline: none; width: 80px; margin-right: 5px;">
-                        <button class="btn btn-primary" style="padding: 5px 15px;" onclick="addStudent()">Qo'shish</button>
-                    </div>
-                </div>
-                
-                <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 300px; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px;">
-                        <h4 style="color: var(--text-muted); border-bottom: 1px solid #333; padding-bottom: 5px;">Baza (Dict)</h4>
-                        <pre id="dbView" style="background: transparent; padding: 0; color: var(--success); font-size: 0.9rem;">{}</pre>
-                    </div>
-                    
-                    <div style="flex: 1; min-width: 300px;">
-                        <div class="stat-card" style="background: rgba(0, 119, 255, 0.1); border: 1px solid var(--secondary); margin-bottom: 10px; padding: 10px; border-radius: 8px;">
-                            <div style="font-size: 0.9rem; color: var(--text-muted);">O'rtacha Baho</div>
-                            <div id="avgScore" style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">0</div>
-                        </div>
-                        <div class="stat-card" style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); margin-bottom: 10px; padding: 10px; border-radius: 8px;">
-                            <div style="font-size: 0.9rem; color: var(--text-muted);">Eng Yuqori Baho (Top Student)</div>
-                            <div id="topStudent" style="font-size: 1.5rem; font-weight: bold; color: var(--success);">-</div>
-                        </div>
-                        <div class="stat-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); padding: 10px; border-radius: 8px;">
-                            <div style="font-size: 0.9rem; color: var(--text-muted);">Eng Past Baho</div>
-                            <div id="minStudent" style="font-size: 1.5rem; font-weight: bold; color: var(--danger);">-</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- HOMEWORK -->
-        <section id="homework" style="padding-top: 80px; margin-top: -80px;">
-            <h2>Uyga Vazifa (30 ta Mashq)</h2>
-            <p>Bilimingizni mustahkamlash uchun amaliyot. Darajalar: Easy, Medium, Hard.</p>
-            <div style="margin-bottom: 1rem;">
-                <input type="text" id="hwFilter" placeholder="Qidirish... (masalan: max)" style="padding: 10px; width: 100%; max-width: 300px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--glass-bg); color: #fff;" onkeyup="filterHW()">
-            </div>
-            <div class="hw-grid" id="hwContainer">
-                <!-- Generated by JS -->
-            </div>
-        </section>
-
-        <!-- QUIZ SYSTEM -->
-        <section id="quiz" style="padding-top: 80px; margin-top: -80px;">
-            <h2>Interactive Quiz (50 Savol)</h2>
-            <div class="glass-panel" id="quizPanel">
-                <div id="quizStartScreen" style="text-align: center; padding: 2rem 0;">
-                    <h3>Boshlang'ich va Junior darajadagi testlar</h3>
-                    <p>Dict mavzusi bo'yicha jami 50 ta savol. O'z bilimingizni sinab ko'ring!</p>
-                    <button class="btn btn-primary" onclick="startQuiz()" style="margin-top: 1rem;">Testni Boshlash</button>
-                </div>
-
-                <div id="quizArea" style="display: none;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-weight: bold;">
-                        <span id="qCount">Savol: 1 / 50</span>
-                        <span id="qScore" style="color: var(--primary);">To'g'ri: 0</span>
-                    </div>
-                    <div class="quiz-progress">
-                        <div class="quiz-bar" id="quizBar"></div>
-                    </div>
-                    
-                    <div id="questionContainer">
-                        <!-- Questions injected here -->
-                    </div>
-
-                    <div class="quiz-controls">
-                        <button class="btn" style="background: #334155; color:#fff;" onclick="nextQuestion()" id="nextBtn" disabled>Keyingi Savol</button>
-                    </div>
-                </div>
-                
-                <div id="quizResultScreen" style="display: none; text-align: center; padding: 2rem 0;">
-                    <h3 class="neon-text">Test Yakunlandi!</h3>
-                    <div style="font-size: 4rem; margin: 1rem 0;" id="finalScore">0/50</div>
-                    <p id="resultMessage" style="font-size: 1.2rem; margin-bottom: 2rem;"></p>
-                    <button class="btn btn-primary" onclick="location.reload()">Qaytadan urinish</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- EXTRA & TIPS -->
-        <section id="tips" style="padding-top: 80px; margin-top: -80px;">
-            <h2>Data Analyst Tips & Interview Questions</h2>
-            <div class="glass-panel">
-                <div class="accordion">
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAccordion(this)">
-                            Performance Tip: Dict vs List <span class="icon">▼</span>
-                        </div>
-                        <div class="accordion-content">
-                            <p><strong>Listda</strong> element qidirish (<code>in</code> operatori bilan) O(n) vaqt oladi. Ya'ni elementlar qancha ko'p bo'lsa, qidirish shuncha sekinlashadi.</p>
-                            <p><strong>Dictda</strong> kalit bo'yicha qidirish <strong>Hash Table</strong> algoritmi asosida ishlagani uchun O(1) vaqt oladi. Millionlab ma'lumot ichidan keraklisini topish bir zumda amalga oshadi.</p>
-                            <p><em>Xulosa: Ma'lumotlarni qidirish uchun List emas, Dict foydalaning!</em></p>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAccordion(this)">
-                            Interview Question 1 <span class="icon">▼</span>
-                        </div>
-                        <div class="accordion-content">
-                            <p><strong>Savol:</strong> Ikkita dict ni qanday qilib eng qisqa usulda birlashtirish (merge) mumkin?</p>
-                            <p><strong>Javob:</strong> Python 3.9+ da <code>|</code> (pipe) operatori orqali:</p>
-                            <pre style="background:#0d1117; padding:10px; border-radius:5px;"><code>d1 = {"a": 1}
-d2 = {"b": 2}
-d3 = d1 | d2  # natija: {'a': 1, 'b': 2}</code></pre>
-                            <p>Eski versiyalarda: <code>d3 = {**d1, **d2}</code></p>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAccordion(this)">
-                            Dict Comprehension <span class="icon">▼</span>
-                        </div>
-                        <div class="accordion-content">
-                            <p>Qisqa va professional kod yozish san'ati.</p>
-                            <pre style="background:#0d1117; padding:10px; border-radius:5px;"><code># 1 dan 5 gacha sonlarning kvadratini dict ga joylash
-squares = {x: x**2 for x in range(1, 6)}
-# natija: {1: 1, 2: 4, 3: 9, 4: 16, 5: 25}</code></pre>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <footer>
-            <div class="neon-text" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">Data Analyst Academy</div>
-            <p>Created for Data Analyst Students | Python Dictionary Masterclass</p>
-            <p>Telegram support: <a href="https://t.me/saddamtg" target="_blank">@saddamtg</a></p>
-            <p style="margin-top: 2rem; font-size: 0.8rem; color: #666;">&copy; 2026 Professional Data Analysis Course. All rights reserved.</p>
-        </footer>
-
-    </main>
-
-    <!-- JAVASCRIPT -->
-    <script>
-        // 1. SCROLL PROGRESS
-        window.onscroll = function() {
-            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            let scrolled = (winScroll / height) * 100;
-            document.getElementById("scrollProgress").style.width = scrolled + "%";
-            
-            // Sidebar active link update
-            let sections = document.querySelectorAll('section');
-            let navLinks = document.querySelectorAll('.nav-link');
-            
-            sections.forEach(sec => {
-                let top = window.scrollY;
-                let offset = sec.offsetTop - 150;
-                let height = sec.offsetHeight;
-                let id = sec.getAttribute('id');
-                
-                if(top >= offset && top < offset + height) {
-                    navLinks.forEach(links => {
-                        links.classList.remove('active');
-                        document.querySelector('.sidebar .nav-menu a[href*=' + id + ']').classList.add('active');
-                    });
-                }
-            });
-        };
-
-        // 2. COPY CODE
-        function copyCode(btn) {
-            let pre = btn.parentElement.nextElementSibling;
-            let text = pre.innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                btn.innerText = "Copied!";
-                btn.style.background = "var(--success)";
-                showToast();
-                setTimeout(() => {
-                    btn.innerText = "Copy";
-                    btn.style.background = "rgba(255, 255, 255, 0.1)";
-                }, 2000);
-            });
-        }
-
-        // 3. TOAST NOTIFICATION
-        function showToast() {
-            let toast = document.getElementById("toastMessage");
-            toast.className = "toast show";
-            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
-        }
-
-        // 4. ANIMATED COUNTERS
-        const counters = document.querySelectorAll('.counter');
-        const speed = 200;
-        
-        const animateCounters = () => {
-            counters.forEach(counter => {
-                const updateCount = () => {
-                    const target = +counter.getAttribute('data-target');
-                    const count = +counter.innerText;
-                    const inc = target / speed;
-                    if(count < target) {
-                        counter.innerText = Math.ceil(count + inc);
-                        setTimeout(updateCount, 20);
-                    } else {
-                        counter.innerText = target;
-                    }
-                }
-                updateCount();
-            });
-        }
-        // Trigger on load
-        setTimeout(animateCounters, 1000);
-
-        // 5. ACCORDION & TABS
-        function toggleAccordion(header) {
-            let item = header.parentElement;
-            item.classList.toggle('active');
-        }
-
-        function openTab(evt, tabName) {
-            let i, tabcontent, tablinks;
-            tabcontent = evt.target.parentElement.nextElementSibling.getElementsByClassName("tab-content");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].classList.remove("active");
-            }
-            tablinks = evt.target.parentElement.getElementsByClassName("tab-btn");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].classList.remove("active");
-            }
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
-        }
-
-        // 6. CHART ANIMATION OBSERVER
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    const bars = entry.target.querySelectorAll('.bar');
-                    bars.forEach(bar => {
-                        bar.style.height = bar.getAttribute('data-val') + '%';
-                    });
-                }
-            });
-        });
-        observer.observe(document.getElementById('chart1'));
-
-        // 7. MINI PROJECT LOGIC
-        let studentDB = {
-            "Ali": 85,
-            "Vali": 92,
-            "Gani": 78
-        };
-
-        function updateDashboard() {
-            document.getElementById('dbView').innerText = JSON.stringify(studentDB, null, 2);
-            
-            let scores = Object.values(studentDB);
-            if(scores.length === 0) {
-                document.getElementById('avgScore').innerText = 0;
-                document.getElementById('topStudent').innerText = "-";
-                document.getElementById('minStudent').innerText = "-";
-                return;
-            }
-
-            let avg = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
-            let maxScore = Math.max(...scores);
-            let minScore = Math.min(...scores);
-            
-            let top = Object.keys(studentDB).find(key => studentDB[key] === maxScore);
-            let worst = Object.keys(studentDB).find(key => studentDB[key] === minScore);
-
-            document.getElementById('avgScore').innerText = avg;
-            document.getElementById('topStudent').innerText = `${top} (${maxScore})`;
-            document.getElementById('minStudent').innerText = `${worst} (${minScore})`;
-        }
-
-        function addStudent() {
-            let name = document.getElementById('stuName').value.trim();
-            let score = parseInt(document.getElementById('stuScore').value);
-            
-            if(name && !isNaN(score) && score >= 0 && score <= 100) {
-                studentDB[name] = score; // Update logic
-                updateDashboard();
-                document.getElementById('stuName').value = "";
-                document.getElementById('stuScore').value = "";
-            } else {
-                alert("Iltimos ism va to'g'ri baho (0-100) kiriting!");
-            }
-        }
-        updateDashboard(); // Init
-
-        // 8. GENERATE 30 HOMEWORK TASKS
-        const hwData = [
-            {t: "Bo'sh lug'at yaratish", l: "Easy", d: "Bo'sh lug'at yarating va type() orqali tekshiring.", h: "d = {}"},
-            {t: "Lug'atga element qo'shish", l: "Easy", d: "'name' kaliti bilan o'z ismingizni dict ga qo'shing.", h: "d['name'] = 'Ali'"},
-            {t: "Lug'atdan qiymat olish", l: "Easy", d: "Yaratilgan lug'atdan 'name' ni ekranga chiqaring.", h: "print(d['name'])"},
-            {t: "Xavfsiz qiymat olish", l: "Easy", d: ".get() metodidan foydalanib 'age' ni oling, yo'q bo'lsa 0 chiqsin.", h: "d.get('age', 0)"},
-            {t: "Lug'at uzunligi", l: "Easy", d: "len() yordamida lug'atda nechta element borligini toping.", h: "len(d)"},
-            {t: "Kalitlarni ro'yxati", l: "Easy", d: "Barcha kalitlarni ro'yxat (list) qilib oling.", h: "list(d.keys())"},
-            {t: "Qiymatlarni ro'yxati", l: "Easy", d: "Barcha qiymatlarni ro'yxat qilib oling.", h: "list(d.values())"},
-            {t: "Juftliklarni olish", l: "Easy", d: ".items() yordamida elementlarni oling.", h: "d.items()"},
-            {t: "Qiymatni o'zgartirish", l: "Easy", d: "'name' qiymatini boshqa ismga almashtiring.", h: "d['name'] = 'Vali'"},
-            {t: "Lug'atni yangilash", l: "Easy", d: "update() yordamida yangi {'age': 20, 'city': 'Tashkent'} qo'shing.", h: "d.update({...})"},
-            {t: "Kalit borligini tekshirish", l: "Medium", d: "'city' kaliti dict ichida bor yoki yo'qligini in operatori bilan tekshiring.", h: "if 'city' in d:"},
-            {t: "Elementni o'chirish (del)", l: "Medium", d: "del operatori yordamida 'age' ni o'chiring.", h: "del d['age']"},
-            {t: "Elementni o'chirish (pop)", l: "Medium", d: "pop() yordamida o'chiring va qiymatini o'zgaruvchiga oling.", h: "val = d.pop('city')"},
-            {t: "Oxirgi elementni o'chirish", l: "Medium", d: "popitem() ishlating.", h: "d.popitem()"},
-            {t: "Lug'atni tozalash", l: "Medium", d: "clear() orqali barcha elementlarni o'chiring.", h: "d.clear()"},
-            {t: "Ikki lug'atni birlashtirish", l: "Medium", d: "d1 va d2 ni d3 ga birlashtiring.", h: "d3 = {**d1, **d2} yoki d1 | d2"},
-            {t: "Qiymatlar yig'indisi", l: "Medium", d: "Faqat sonlardan iborat dict qiymatlari yig'indisini toping.", h: "sum(d.values())"},
-            {t: "Qiymatlar maksimali", l: "Medium", d: "Dict dagi eng katta sonni toping.", h: "max(d.values())"},
-            {t: "Qiymatlar minimali", l: "Medium", d: "Dict dagi eng kichik sonni toping.", h: "min(d.values())"},
-            {t: "Dictni aylanib chiqish", l: "Medium", d: "for loop va .items() orqali kalit va qiymatlarni print qiling.", h: "for k, v in d.items():"},
-            {t: "Listdan Dict yasash", l: "Hard", d: "Ikki list: k=['a','b'], v=[1,2] ni dict ga o'giring.", h: "dict(zip(k, v))"},
-            {t: "Dict Comprehension", l: "Hard", d: "1 dan 5 gacha sonlarning kvadratidan dict yarating.", h: "{x: x**2 for x in range(1,6)}"},
-            {t: "Qiymatlarni saralash", l: "Hard", d: "Dictni qiymatlari bo'yicha o'sish tartibida saralang.", h: "sorted(d.items(), key=lambda x: x[1])"},
-            {t: "Nested Dict qiymat olish", l: "Hard", d: "d={'A':{'B': 10}} dan 10 ni oling.", h: "d['A']['B']"},
-            {t: "Xatolikni ushlash", l: "Hard", d: "Mavjud bo'lmagan kalitga murojaat qilib, try-except bilan ushlang.", h: "try: ... except KeyError:"},
-            {t: "Frequency Dict", l: "Hard", d: "Matndagi harflar necha marta qatnashganini dict orqali sanang.", h: "for char in text: d[char] = d.get(char,0)+1"},
-            {t: "Dict kalitlarini almashtirish", l: "Hard", d: "Dict ning kalit va qiymatlari o'rnini almashtiring.", h: "{v: k for k, v in d.items()}"},
-            {t: "Shartli Dict yasash", l: "Hard", d: "Faqat juft sonlarning kvadratini o'z ichiga olgan dict yarating.", h: "{x: x**2 for x in range(10) if x%2==0}"},
-            {t: "Top 3 qiymat", l: "Hard", d: "Dict dan eng katta 3 ta qiymatni toping.", h: "sorted(d.values(), reverse=True)[:3]"},
-            {t: "Deep Copy", l: "Hard", d: "Nested dict ni nusxalashda copy moduli deepcopy ishlating.", h: "import copy; new_d = copy.deepcopy(d)"}
-        ];
-
-        const hwContainer = document.getElementById('hwContainer');
-        hwData.forEach((hw, index) => {
-            let badgeClass = hw.l === 'Easy' ? 'badge-easy' : hw.l === 'Medium' ? 'badge-medium' : 'badge-hard';
-            let card = document.createElement('div');
-            card.className = 'glass-panel hw-card';
-            card.innerHTML = `
-                <span class="hw-badge ${badgeClass}">${hw.l}</span>
-                <h4 style="margin-top: 5px; color: #fff;">${index + 1}. ${hw.t}</h4>
-                <p style="font-size: 0.9rem;">${hw.d}</p>
-                <div class="hw-hint" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">👁️ Hint ko'rish</div>
-                <div class="hw-hint-text">${hw.h}</div>
-            `;
-            hwContainer.appendChild(card);
-        });
-
-        function filterHW() {
-            let filter = document.getElementById('hwFilter').value.toLowerCase();
-            let cards = hwContainer.getElementsByClassName('hw-card');
-            for(let i = 0; i < cards.length; i++) {
-                let text = cards[i].innerText.toLowerCase();
-                cards[i].style.display = text.indexOf(filter) > -1 ? "" : "none";
-            }
-        }
-
-        // 9. GENERATE 50 QUIZ QUESTIONS
-        const allQuestions = [];
-        // Helper funksiya array shuffle uchun
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        // Baza savollari (namuna uchun 10 ta bazaviy savol yozib, tsikl orqali 50 taga yetkazamiz variatsiyalar bilan)
-        const baseQ = [
-            {q: "Python'da bo'sh dictionary qanday yaratiladi?", opts: ["{}", "[]", "()", "dict[]"], ans: "{}"},
-            {q: "Dictionarydagi kalitlar (keys) qanday bo'lishi shart?", opts: ["Unikal", "Takrorlanuvchi", "Faqat raqam", "Faqat string"], ans: "Unikal"},
-            {q: "Dict dan xavfsiz qiymat olish usuli qaysi?", opts: [".get()", "[]", ".fetch()", ".take()"], ans: ".get()"},
-            {q: "Barcha kalitlarni olish metodini toping.", opts: [".keys()", ".all_keys()", ".get_keys()", ".keys"], ans: ".keys()"},
-            {q: "Barcha qiymatlarni olish metodini toping.", opts: [".values()", ".vals()", ".get_values()", ".values"], ans: ".values()"},
-            {q: "Kalit-qiymat juftligini Tuple sifatida olish metodini toping.", opts: [".items()", ".pairs()", ".tuples()", ".elements()"], ans: ".items()"},
-            {q: "Elementni o'chirish va qiymatini qaytarish metodi qaysi?", opts: [".pop()", "del", ".remove()", ".delete()"], ans: ".pop()"},
-            {q: "Dict ni butunlay tozalash metodi qaysi?", opts: [".clear()", ".empty()", ".delete_all()", ".format()"], ans: ".clear()"},
-            {q: "Oxirgi qo'shilgan elementni o'chirish metodi?", opts: [".popitem()", ".pop_last()", ".remove_last()", ".del_end()"], ans: ".popitem()"},
-            {q: "Ikki dict ni birlashtirish metodi qaysi?", opts: [".update()", ".merge()", ".add()", ".concat()"], ans: ".update()"},
-            {q: "Dict kaliti bo'la oladigan turni belgilang.", opts: ["String", "List", "Dictionary", "Set"], ans: "String"},
-            {q: "Dictionary qaysi algoritmga asoslangan?", opts: ["Hash Table", "Binary Tree", "Linked List", "Stack"], ans: "Hash Table"},
-            {q: "Dict qiymati nima bo'lishi mumkin?", opts: ["Har qanday tur", "Faqat matn", "Faqat raqam", "Faqat o'zgarmas tur"], ans: "Har qanday tur"},
-            {q: "d = {'a': 1}. del d['a'] natijasi nima bo'ladi?", opts: ["d bo'sh qoladi", "Xatolik", "1 qaytaradi", "a qaytaradi"], ans: "d bo'sh qoladi"},
-            {q: "'in' operatori dict ning nimasini tekshiradi?", opts: ["Kalitini", "Qiymatini", "Indeksini", "Uzunligini"], ans: "Kalitini"}
-        ];
-
-        // 50 taga yetkazish uchun generatsiya
-        for(let i=0; i<50; i++) {
-            let b = baseQ[i % baseQ.length];
-            let options = [...b.opts];
-            let ansStr = b.ans;
-            
-            // Variatsiyalar qo'shish
-            let qText = i >= baseQ.length ? `[${i+1}] ` + b.q : b.q;
-            
-            shuffleArray(options); // Javoblarni aralashtirish (A B C D fix bo'lmasligi uchun)
-            let ansIdx = options.indexOf(ansStr);
-
-            allQuestions.push({
-                q: qText,
-                options: options,
-                answer: ansIdx
-            });
-        }
-        // Umumiy savollarni ham aralashtiramiz
-        shuffleArray(allQuestions);
-
-        // Quiz Logic Variables
-        let currentQ = 0;
-        let score = 0;
-        let selectedOption = null;
-
-        function startQuiz() {
-            document.getElementById('quizStartScreen').style.display = 'none';
-            document.getElementById('quizArea').style.display = 'block';
-            loadQuestion();
-        }
-
-        function loadQuestion() {
-            const container = document.getElementById('questionContainer');
-            container.innerHTML = '';
-            selectedOption = null;
-            document.getElementById('nextBtn').disabled = true;
-
-            let qData = allQuestions[currentQ];
-            
-            let card = document.createElement('div');
-            card.className = 'question-card active';
-            card.innerHTML = `
-                <h4 style="margin-bottom: 1.5rem; font-size: 1.2rem;">${qData.q}</h4>
-                ${qData.options.map((opt, idx) => `
-                    <button class="option-btn" onclick="selectOption(this, ${idx})">${['A', 'B', 'C', 'D'][idx]}) ${opt}</button>
-                `).join('')}
-            `;
-            container.appendChild(card);
-
-            document.getElementById('qCount').innerText = `Savol: ${currentQ + 1} / 50`;
-            document.getElementById('quizBar').style.width = `${((currentQ) / 50) * 100}%`;
-        }
-
-        function selectOption(btn, idx) {
-            if(selectedOption !== null) return; // Already answered this question
-            
-            selectedOption = idx;
-            let correctIdx = allQuestions[currentQ].answer;
-            let btns = document.querySelectorAll('.option-btn');
-            
-            if(idx === correctIdx) {
-                btn.classList.add('correct');
-                score++;
-                document.getElementById('qScore').innerText = `To'g'ri: ${score}`;
-            } else {
-                btn.classList.add('wrong');
-                btns[correctIdx].classList.add('correct'); // Show correct answer
-            }
-            
-            document.getElementById('nextBtn').disabled = false;
-            
-            if(currentQ === 49) {
-                document.getElementById('nextBtn').innerText = "Natijani Ko'rish";
-            }
-        }
-
-        function nextQuestion() {
-            currentQ++;
-            if(currentQ < 50) {
-                loadQuestion();
-            } else {
-                showResult();
-            }
-        }
-
-        function showResult() {
-            document.getElementById('quizArea').style.display = 'none';
-            document.getElementById('quizResultScreen').style.display = 'block';
-            document.getElementById('finalScore').innerText = `${score}/50`;
-            
-            let msg = "";
-            let color = "";
-            if(score >= 45) { msg = "Ajoyib! Siz Senior darajadasiz! 🏆"; color = "var(--success)"; }
-            else if(score >= 35) { msg = "Yaxshi! Middle daraja. Yana ozgina izlanish kerak. 👍"; color = "var(--primary)"; }
-            else if(score >= 20) { msg = "Yomon emas, lekin Junior darajasidasiz. Darsni qayta o'qing. 📚"; color = "var(--warning)"; }
-            else { msg = "Natija past. Darsni boshidan diqqat bilan o'rganib chiqing! ⚠️"; color = "var(--danger)"; }
-            
-            let resMsg = document.getElementById('resultMessage');
-            resMsg.innerText = msg;
-            resMsg.style.color = color;
-        }
-
-    </script>
+/* ===== download hw ===== */
+function downloadHW() {
+  let txt = `${DATA.title.toUpperCase()}\nUY ISHI (15 ta topshiriq)\nSaddam Teacher | Data Analyst kursi | t.me/saddamtg\n` + "=".repeat(55) + "\n\n";
+  HW.forEach((h, i) => { txt += `${i + 1}. ${h}\n\n`; });
+  const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `${DATA.lesson_no}-dars_uy_ishi.txt`;
+  a.click();
+}
+</script>
 </body>
 </html>
